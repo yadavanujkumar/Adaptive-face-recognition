@@ -1,0 +1,85 @@
+# System Configuration for Adaptive Face Recognition
+
+# Model Paths
+models:
+  detector:
+    path: "weights/scrfd_10g.onnx"
+    backend: "onnxruntime"  # or "opencv"
+    input_size: [640, 640]
+  
+  liveness:
+    path: "weights/liveness_net.onnx"
+    backend: "onnxruntime"
+    input_size: [128, 128]
+  
+  recognition:
+    path: "weights/mobilefacenet.onnx"
+    backend: "onnxruntime"
+    input_size: [112, 112]
+
+# Thresholds
+thresholds:
+  detection_conf: 0.5
+  detection_nms: 0.4
+  liveness_score: 0.7
+  recognition_similarity: 0.6
+
+# Pipeline Settings
+pipeline:
+  device: "cpu"  # or "cuda"
+  use_onnx: true
+  batch_size: 1
+  max_faces_per_frame: 10
+
+# Video Capture
+video:
+  camera_id: 0
+  width: 640
+  height: 480
+  fps: 30
+
+# Vector Database
+database:
+  type: "qdrant"  # or "milvus" or "inmemory"
+  host: "localhost"
+  port: 6333
+  collection_name: "face_embeddings"
+  embedding_size: 512
+
+# API Server
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8501"
+
+# Frontend
+frontend:
+  title: "Adaptive Face Recognition"
+  theme: "light"
+  max_upload_size: 10  # MB
+
+# Training (for reference)
+training:
+  recognition:
+    dataset: "ms1mv3"
+    backbone: "mobilefacenet"
+    loss: "adaface"
+    batch_size: 512
+    learning_rate: 0.1
+    epochs: 30
+    
+  liveness:
+    dataset: "celeba_spoof"
+    batch_size: 64
+    learning_rate: 0.001
+    epochs: 50
+    use_auxiliary: true
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/system.log"
